@@ -1,13 +1,11 @@
 
 # Importing
 from tkinter import Tk, Canvas
+from random import choice, randint
 
 # GUI set-up
 root = Tk()
 c = Canvas(root, width=1800, height=900)
-c.pack()
-root.mainloop()
-
 
 # Variables
 property_rents = \
@@ -26,8 +24,16 @@ property_rents = \
 # Classes
 class Player:
     def __init__(self):
-        self.money = 0
+        self.money = 1500
         self.properties_list = []
+        self.index = 0
+
+
+    def roll_dice(self):
+        self.index += randint(1,6) + randint(1,6)
+        if self.index >= 36:
+            self.index -= 36
+            self.money += 200
 
 
 
@@ -109,4 +115,33 @@ class TaxPlace(Place):
         player.money -= self.tax
 
 class ChancePlace(Place):
-    
+    def __init__(self, index):
+        super().__init__(index)
+        self.chance_lists = [("", "am")]
+
+
+    def visiting_sequence(self, player):
+        pass # placeholder... too much of a headache... will deal with later
+
+
+
+class PropertyPlace(Place):
+    def __init__(self, index, linked_property):
+        super().__init__(index)
+        self.linked_property = linked_property
+
+
+    def visiting_sequence(self, player):
+        if self.linked_property.owner is None:
+            acquire_property__ = None # placeholder for figuring out whether player will buy or not... will implement with GUI
+            if acquire_property__ is True:
+                self.linked_property.acquired_by_player(player)
+            else:
+                pass # placeholder for auctions... will do later
+        else:
+            player.money -= self.linked_property.rent
+            self.linked_property.owner.money += self.linked_property.rent
+
+
+c.pack()
+root.mainloop()
