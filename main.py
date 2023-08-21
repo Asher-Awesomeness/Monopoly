@@ -1,7 +1,7 @@
 
 # Importing
 from tkinter import Tk, Canvas
-from random import choice, randint
+from random import randint, shuffle
 
 # GUI set-up
 root = Tk()
@@ -19,6 +19,7 @@ property_rents = \
     "green": [[26, 130, 390, 900, 1100], [26, 130, 390, 900, 1100], [28, 150, 450, 1000, 1200]],
     "blue": [[35, 175, 500, 1100, 1300], [50, 200, 600, 1400, 1700]]
     }
+place_list = []
 
 
 # Classes
@@ -27,13 +28,35 @@ class Player:
         self.money = 1500
         self.properties_list = []
         self.index = 0
+        self.jail_time = 0
 
 
-    def roll_dice(self):
+    def go_to_jail(self):
+        self.index = 10 # index for jail
+        self.jail_time = 3
+
+
+    def turn_sequence(self):
         self.index += randint(1,6) + randint(1,6)
-        if self.index >= 36:
-            self.index -= 36
-            self.money += 200
+        if self.jail_time > 0:
+            self.jail_time -= 1
+        else:
+            turn__ = True
+            double_rolls = 0
+            while turn__:
+                d1 = randint(1, 6)
+                d2 = randint(1, 6)
+                if d1 == d2:
+                    double_rolls += 1
+                    if double_rolls == 3:
+                        pass
+                turn__ = False
+                self.index += d1 + d2
+                if self.index > 35:
+                    self.index -= 36
+                    self.money += 200
+                place_list[self.index].visiting_sequence()
+
 
 
 
