@@ -141,11 +141,15 @@ class ChancePlace(Place):
     def __init__(self, index):
         super().__init__(index)
         self.chance_lists = [("", "am")]
-
+        enumerate(self.chance_lists)
+        shuffle(self.chance_lists)
 
     def visiting_sequence(self, player):
-        pass # placeholder... too much of a headache... will deal with later
-
+        picked_card = self.chance_lists.pop(0)
+        self.chance_lists.append(picked_card)
+        # card code stuff... will implement later
+        
+        
 
 
 class PropertyPlace(Place):
