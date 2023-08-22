@@ -27,6 +27,8 @@ class Player:
     def __init__(self):
         self.money = 1500
         self.properties_list = []
+        self.railways_list = []
+        self.utilities_list = []
         self.index = 0
         self.jail_time = 0
 
@@ -94,6 +96,47 @@ class Property:
 
 
 
+class RailwayProperty:
+    def __init__(self, name):
+        self.name = name
+        self.owner = None
+        self.rent = 50
+
+
+    def acquired_by_player(self, player):
+        player.money -= 200
+        player.properties_list.append(self)
+        player.railways_list.append(self)
+        self.update_rent()
+
+
+    def update_rent(self):
+        if not self.owner is None:
+            self.rent = len(self.owner.railways_list) * 50
+
+
+
+class UtilityProperty:
+    def __init__(self, name):
+        self.name = name
+        self.rent_multiplier = 4
+        self.rent_multiplier_list = [4, 10]
+        self.rent = 0
+        self.owner = None
+        
+    def acquired_by_player(self, player):
+        player.money -= 150
+        player.properties_list.append(self)
+        player.utilities_list.append(self)
+        self.update_rent()
+        
+    
+    def update_rent(self):
+        if not self.owner is None:
+            self.rent_multiplier = self.rent_multiplier_list[len(self.owner.utilities_list)]
+
+
+
 class PropertySet:
     def __init__(self, colour, length, property1, property2, property3=None):
         self.colour = colour
@@ -148,8 +191,8 @@ class ChancePlace(Place):
         picked_card = self.chance_lists.pop(0)
         self.chance_lists.append(picked_card)
         # card code stuff... will implement later
-        
-        
+
+
 
 
 class PropertyPlace(Place):
