@@ -29,6 +29,14 @@ def player_acquisition_sequence(player, acquired_property, price):
     player.properties_list.append(acquired_property)
 
 
+def move_players(player, index):
+    player.index = index
+    if player.index > 35:
+        player.index -= 36
+        player.money += 200
+    place_list[player.index].visiting_sequence()
+
+
 # Classes
 class Player:
     def __init__(self):
@@ -199,12 +207,10 @@ class PropertyPlace(Place):
             self.linked_property.owner.money += self.linked_property.rent
 
 
-
 class UtilityPropertyPlace(Place):
     def __init__(self, index, linked_utility):
         super().__init__(index)
         self.linked_utility = linked_utility
-
 
     def visiting_sequence(self, player):
         if self.linked_utility.owner is None:
@@ -216,6 +222,39 @@ class UtilityPropertyPlace(Place):
         else:
             player.money -= self.linked_utility.rent_multiplier * player.latest_dice_roll
             self.linked_utility.owner.money += self.linked_utility.rent_multiplier * player.latest_dice_roll
+
+
+class GoToJailPlace(Place):
+    def __init__(self, index):
+        super().__init__(index)
+
+    def visiting_sequence(self, player):
+        player.go_to_jail()
+
+
+class FreeParkingPlace(Place):
+    def __init__(self, index):
+        super().__init__(index)
+
+    def visiting_sequence(self, player):
+        pass  # This is not a placeholder... Nothing happens on free parking space! lol
+
+
+class StartPlace(Place):
+    def __init__(self, index):
+        super().__init__(index)
+
+    def visiting_sequence(self, player):
+        pass  # No work needs to be done... the player glass gives the money itself
+
+
+class JailPlace(Place):
+    def __init__(self, index):
+        super().__init__(index)
+
+    def visiting_sequence(self, player):
+        pass  # Nothing actually happens when you land on the jail space, it's just a place to keep tokens
+
 
 c.pack()
 root.mainloop()
