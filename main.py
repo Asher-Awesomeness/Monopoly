@@ -19,6 +19,7 @@ property_rents = \
         "blue": [[35, 175, 500, 1100, 1300], [50, 200, 600, 1400, 1700]]
     }
 place_list = []
+property_set_dict = {}
 
 
 # Functions
@@ -29,10 +30,10 @@ def player_acquisition_sequence(player, acquired_property, price):
     player.properties_list.append(acquired_property)
 
 
-def move_players(player, index):
+def move_player(player, index):
+    previous_index = player.index
     player.index = index
-    if player.index > 35:
-        player.index -= 36
+    if player.index < previous_index:
         player.money += 200
     place_list[player.index].visiting_sequence()
 
@@ -47,6 +48,7 @@ class Player:
         self.index = 0
         self.jail_time = 0
         self.latest_dice_roll = 0
+        self.get_out_of_jail_free_card = False
 
     def go_to_jail(self):
         self.index = 10  # index for jail
@@ -68,11 +70,10 @@ class Player:
                     if double_rolls == 3:
                         pass
                 turn__ = False
-                self.index += self.latest_dice_roll
-                if self.index > 35:
-                    self.index -= 36
-                    self.money += 200
-                place_list[self.index].visiting_sequence()
+                new_index = self.index + self.latest_dice_roll
+                if new_index > 35:
+                    new_index -= 35
+                move_player(self, new_index)
 
 
 class Property:
@@ -185,9 +186,30 @@ class ChancePlace(Place):
         shuffle(self.chance_lists)
 
     def visiting_sequence(self, player):
-        picked_card = self.chance_lists.pop(0)
-        self.chance_lists.append(picked_card)
-        # card code stuff... will implement later
+        number, picked_card = self.chance_lists.pop(0)
+        self.chance_lists.append((number, picked_card))
+        if number == 0: # get a get out of jail free card
+            player.get_out_of_jail_free_card = True
+        elif number == 1: # street repairs
+            for x in player.properties_list:
+                if not type(x) == "<class '__main__.RailwayProperty'>" or not type(x) == \
+                                                                              "<class '__main__.UtilityProperty'>":
+                    player.money -= x.houses * 40
+                    if player.houses == 5:
+                        player.money -= 75
+        elif number == 2: # go to pall mall
+            move_player(player, 11)
+        elif number == 3: # go to jail
+            player.go_to_jail()
+        elif number == 4: # speeding fine
+            player.money -= 15
+        elif number == 5: # school fees
+            player.money -= 150
+        elif number == 6: # advance to Go
+            move_player(player, 0)
+        elif number == 7: # bank gives 50
+            player.money += 50
+
 
 
 class PropertyPlace(Place):
@@ -254,6 +276,7 @@ class JailPlace(Place):
 
     def visiting_sequence(self, player):
         pass  # Nothing actually happens when you land on the jail space, it's just a place to keep tokens
+
 
 
 c.pack()
