@@ -19,6 +19,7 @@ property_rents = \
         "blue": [[35, 175, 500, 1100, 1300], [50, 200, 600, 1400, 1700]]
     }
 place_list = []
+players_list = []
 property_set_dict = {}
 
 
@@ -188,28 +189,100 @@ class ChancePlace(Place):
     def visiting_sequence(self, player):
         number, picked_card = self.chance_lists.pop(0)
         self.chance_lists.append((number, picked_card))
-        if number == 0: # get a get out of jail free card
+        if number == 0:  # get a get out of jail free card
             player.get_out_of_jail_free_card = True
-        elif number == 1: # street repairs
+        elif number == 1:  # street repairs
             for x in player.properties_list:
                 if not type(x) == "<class '__main__.RailwayProperty'>" or not type(x) == \
                                                                               "<class '__main__.UtilityProperty'>":
                     player.money -= x.houses * 40
                     if player.houses == 5:
                         player.money -= 75
-        elif number == 2: # go to pall mall
+        elif number == 2:  # go to pall mall
             move_player(player, 11)
-        elif number == 3: # go to jail
+        elif number == 3:  # go to jail
             player.go_to_jail()
-        elif number == 4: # speeding fine
+        elif number == 4:  # speeding fine
             player.money -= 15
-        elif number == 5: # school fees
+        elif number == 5:  # school fees
             player.money -= 150
-        elif number == 6: # advance to Go
+        elif number == 6:  # advance to Go
             move_player(player, 0)
-        elif number == 7: # bank gives 50
+        elif number == 7:  # bank gives 50
             player.money += 50
+        elif number == 8:  # drunk in charge
+            player.money -= 20
+        elif number == 9:  # go to marylebone station
+            move_player(player, 14)
+        elif number == 10:  # general repairs
+            for x in player.properties_list:
+                if not type(x) == "<class '__main__.RailwayProperty'>" or not type(x) == \
+                                                                              "<class '__main__.UtilityProperty'>":
+                    player.money -= x.houses * 25
+                    if player.houses == 5:
+                        player.money -= 85
+        elif number == 11:  # Go to mayfair
+            move_player(player, 35)
+        elif number == 12:  # go to trafalgar
+            move_player(player, 24)
+        elif number == 13:  # go back 3 spaces
+            move_player(player, player.index - 3)
+        elif number == 14:  # building loan
+            player.money += 150
+        elif number == 15:  # crossword competition
+            player.money += 100
 
+
+class CommunityChestPlace(Place):
+    def __init__(self, index):
+        super().__init__(index)
+        self.chest_lists = [("", "am")]
+        enumerate(self.chest_lists)
+        shuffle(self.chest_lists)
+
+    def visiting_sequence(self, player):
+        number, picked_card = self.chest_lists.pop(0)
+        self.chest_lists.append((number, picked_card))
+        if number == 0:  # go to jail
+            player.go_to_jail()
+        elif number == 1:  # income tax refund
+            player.money += 20
+        elif number == 2:  # interest
+            player.money += 25
+        elif number == 3:  # $10 or chance
+            x = True  # placeholder...
+            if x:
+                player.money -= 10
+            else:
+                place_list[7].visiting_sequence()
+        elif number == 4:  # bank error
+            player.money += 200
+        elif number == 5:  # go to old kent road
+            move_player(player, 1)
+        elif number == 6:  # pay hospital
+            player.money -= 100
+        elif number == 7:  # beauty contest
+            player.money += 10
+        elif number == 8:  # inheritance
+            player.money += 100
+        elif number == 9:  # birthday
+            player.money += 10 * len(players_list)
+            for x in players_list:
+                if not x == player:
+                    x.money -= 10
+        elif number == 10:  # sale of stock
+            player.money += 50
+        # will fill rest later
+        elif number == 11:  #
+            pass
+        elif number == 12:  #
+            pass
+        elif number == 13:  #
+            pass
+        elif number == 14:  #
+            pass
+        elif number == 15:  #
+            pass
 
 
 class PropertyPlace(Place):
@@ -276,7 +349,6 @@ class JailPlace(Place):
 
     def visiting_sequence(self, player):
         pass  # Nothing actually happens when you land on the jail space, it's just a place to keep tokens
-
 
 
 c.pack()
